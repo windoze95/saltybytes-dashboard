@@ -65,17 +65,14 @@ Operational dashboard for the SaltyBytes recipe platform -- surfaces metrics, co
 
 ## Unraid
 
-An Unraid Community Applications XML template is included at `unraid/saltybytes-dashboard.xml`.
+Open a terminal on your Unraid server and download the template:
 
-To install manually:
+```bash
+curl -o /boot/config/plugins/dockerMan/templates-user/my-saltybytes-dashboard.xml \
+  https://raw.githubusercontent.com/windoze95/saltybytes-dashboard/main/unraid/saltybytes-dashboard.xml
+```
 
-1. In the Unraid web UI, go to **Docker > Add Container > Template Repositories**.
-2. Add the template URL:
-   ```
-   https://raw.githubusercontent.com/windoze95/saltybytes-dashboard/main/unraid/saltybytes-dashboard.xml
-   ```
-3. Click **Add**, then find **saltybytes-dashboard** in the template list.
-4. Fill in the **Database URL** and **Dashboard Password** fields, then click **Apply**.
+Then in the Unraid web UI, go to **Docker > Add Container**, select **saltybytes-dashboard** from the template dropdown, fill in the **Database URL** and **Dashboard Password** fields, and click **Apply**.
 
 The container image is pulled from `ghcr.io/windoze95/saltybytes-dashboard:latest`. Persistent data (rate card configuration) is stored at `/mnt/user/appdata/saltybytes-dashboard` by default.
 
