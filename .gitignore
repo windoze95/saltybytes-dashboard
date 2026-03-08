@@ -1,0 +1,33 @@
+# Go
+/cmd/dashboard/dashboard
+*.exe
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Embedded static (built from frontend)
+internal/server/static/assets/
+internal/server/static/index.html
+
+# Environment
+.env
+
+# Data
+/data/
+ratecard.json
+
+# Root node_modules (puppeteer, etc.)
+/node_modules/
+/package.json
+/package-lock.json
+
+# Scripts (dev tooling)
+/scripts/
+
+# Seed data (dev tooling)
+/seed/
+
+# IDE
+.vscode/
+.idea/

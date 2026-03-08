@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>saltybytes-dashboard</Name>
+  <Repository>ghcr.io/saltybytes/saltybytes-dashboard:latest</Repository>
+  <Registry>https://ghcr.io</Registry>
+  <Network>br0</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/saltybytes/saltybytes-dashboard/issues</Support>
+  <Project>https://github.com/saltybytes/saltybytes-dashboard</Project>
+  <Overview>
+    SaltyBytes operational dashboard. Connects read-only to the production PostgreSQL database and surfaces metrics, cost tracking, and data health checks across AI providers, caching layers, recipe pipelines, and user subscriptions.
+  </Overview>
+  <Category>Tools: Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:80]/</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/saltybytes/saltybytes-dashboard/main/unraid/saltybytes-dashboard.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/saltybytes/saltybytes-dashboard/main/logo/icon.png</Icon>
+  <ExtraParams/>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled/>
+  <DonateText/>
+  <DonateLink/>
+  <Requires>
+    PostgreSQL database accessible from this server (e.g. via WireGuard/Tailscale to AWS RDS).
+  </Requires>
+  <Config
+    Name="Web UI Port"
+    Target="80"
+    Default="80"
+    Mode="tcp"
+    Description="Dashboard web interface port."
+    Type="Port"
+    Display="always"
+    Required="true"
+    Mask="false"
+  >80</Config>
+  <Config
+    Name="Database URL"
+    Target="DATABASE_URL"
+    Default=""
+    Mode=""
+    Description="PostgreSQL connection string for the read-only dashboard user. Example: postgres://dashboard_ro:password@rds-host:5432/saltybytes?sslmode=require"
+    Type="Variable"
+    Display="always"
+    Required="true"
+    Mask="true"
+  />
+  <Config
+    Name="Dashboard Password"
+    Target="DASHBOARD_PASSWORD"
+    Default=""
+    Mode=""
+    Description="Password to access the dashboard web UI."
+    Type="Variable"
+    Display="always"
+    Required="true"
+    Mask="true"
+  />
+  <Config
+    Name="Port"
+    Target="PORT"
+    Default="80"
+    Mode=""
+    Description="Internal server port (should match the container port above)."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false"
+  >80</Config>
+  <Config
+    Name="Data Directory"
+    Target="/data"
+    Default="/mnt/user/appdata/saltybytes-dashboard"
+    Mode="rw"
+    Description="Persistent storage for rate card configuration and other data."
+    Type="Path"
+    Display="always"
+    Required="true"
+    Mask="false"
+  >/mnt/user/appdata/saltybytes-dashboard</Config>
+</Container>
