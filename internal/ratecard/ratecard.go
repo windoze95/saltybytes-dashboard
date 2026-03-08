@@ -6,9 +6,8 @@ import (
 	"sync"
 )
 
-type RateCard struct {
-	mu sync.RWMutex
-
+// Rates holds the pricing values. Safe to copy by value.
+type Rates struct {
 	// Anthropic
 	AnthropicSonnetInputPerMTok  float64 `json:"anthropic_sonnet_input_per_mtok"`
 	AnthropicSonnetOutputPerMTok float64 `json:"anthropic_sonnet_output_per_mtok"`
@@ -31,21 +30,29 @@ type RateCard struct {
 	AWSS3PerGB    float64 `json:"aws_s3_per_gb"`
 }
 
+// RateCard wraps Rates with thread-safe access.
+type RateCard struct {
+	mu    sync.RWMutex
+	rates Rates
+}
+
 func Default() *RateCard {
 	return &RateCard{
-		AnthropicSonnetInputPerMTok:  3.00,
-		AnthropicSonnetOutputPerMTok: 15.00,
-		AnthropicHaikuInputPerMTok:   0.80,
-		AnthropicHaikuOutputPerMTok:  4.00,
-		OpenAIDallePerImage:          0.04,
-		OpenAIWhisperPerMinute:       0.006,
-		OpenAIEmbeddingPerMTok:       0.02,
-		BraveMonthlyPlan:             0.00,
-		FirecrawlMonthlyCredits:      500,
-		FirecrawlCreditsPerScrape:    1,
-		AWSRDSMonthly:                0.00,
-		AWSECSMonthly:                0.00,
-		AWSS3PerGB:                   0.023,
+		rates: Rates{
+			AnthropicSonnetInputPerMTok:  3.00,
+			AnthropicSonnetOutputPerMTok: 15.00,
+			AnthropicHaikuInputPerMTok:   0.80,
+			AnthropicHaikuOutputPerMTok:  4.00,
+			OpenAIDallePerImage:          0.04,
+			OpenAIWhisperPerMinute:       0.006,
+			OpenAIEmbeddingPerMTok:       0.02,
+			BraveMonthlyPlan:             0.00,
+			FirecrawlMonthlyCredits:      500,
+			FirecrawlCreditsPerScrape:    1,
+			AWSRDSMonthly:                0.00,
+			AWSECSMonthly:                0.00,
+			AWSS3PerGB:                   0.023,
+		},
 	}
 }
 
@@ -59,39 +66,27 @@ func (rc *RateCard) Load(path string) error {
 	}
 	rc.mu.Lock()
 	defer rc.mu.Unlock()
-	return json.Unmarshal(data, rc)
+	return json.Unmarshal(data, &rc.rates)
 }
 
 func (rc *RateCard) Save(path string) error {
 	rc.mu.RLock()
 	defer rc.mu.RUnlock()
-	data, err := json.MarshalIndent(rc, "", "  ")
+	data, err := json.MarshalIndent(rc.rates, "", "  ")
 	if err != nil {
 		return err
 	}
 	return os.WriteFile(path, data, 0644)
 }
 
-func (rc *RateCard) Get() RateCard {
+func (rc *RateCard) Get() Rates {
 	rc.mu.RLock()
 	defer rc.mu.RUnlock()
-	return *rc
+	return rc.rates
 }
 
-func (rc *RateCard) Update(updated RateCard) {
+func (rc *RateCard) Update(updated Rates) {
 	rc.mu.Lock()
 	defer rc.mu.Unlock()
-	rc.AnthropicSonnetInputPerMTok = updated.AnthropicSonnetInputPerMTok
-	rc.AnthropicSonnetOutputPerMTok = updated.AnthropicSonnetOutputPerMTok
-	rc.AnthropicHaikuInputPerMTok = updated.AnthropicHaikuInputPerMTok
-	rc.AnthropicHaikuOutputPerMTok = updated.AnthropicHaikuOutputPerMTok
-	rc.OpenAIDallePerImage = updated.OpenAIDallePerImage
-	rc.OpenAIWhisperPerMinute = updated.OpenAIWhisperPerMinute
-	rc.OpenAIEmbeddingPerMTok = updated.OpenAIEmbeddingPerMTok
-	rc.BraveMonthlyPlan = updated.BraveMonthlyPlan
-	rc.FirecrawlMonthlyCredits = updated.FirecrawlMonthlyCredits
-	rc.FirecrawlCreditsPerScrape = updated.FirecrawlCreditsPerScrape
-	rc.AWSRDSMonthly = updated.AWSRDSMonthly
-	rc.AWSECSMonthly = updated.AWSECSMonthly
-	rc.AWSS3PerGB = updated.AWSS3PerGB
+	rc.rates = updated
 }

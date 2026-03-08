@@ -57,7 +57,7 @@ type CostCenterMetrics struct {
 	FirecrawlCreditsUsed int64                     `json:"firecrawl_credits_used"`
 	FirecrawlCreditsMax  int                       `json:"firecrawl_credits_max"`
 	MonthlyFixedCosts    float64                   `json:"monthly_fixed_costs"`
-	RateCard             ratecard.RateCard         `json:"rate_card"`
+	RateCard             ratecard.Rates            `json:"rate_card"`
 }
 
 func New(db *gorm.DB, rc *ratecard.RateCard) *MetricCache {

@@ -63,7 +63,7 @@ func (s *Server) handleUpdateRateCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updated ratecard.RateCard
+	var updated ratecard.Rates
 	if err := decodeJSON(r, &updated); err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
