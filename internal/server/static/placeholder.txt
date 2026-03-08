@@ -1,0 +1,2 @@
+This file ensures the static directory exists for go:embed.
+It will be replaced by the Vite build output.

@@ -1,21 +1,21 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>saltybytes-dashboard</Name>
-  <Repository>ghcr.io/saltybytes/saltybytes-dashboard:latest</Repository>
+  <Repository>ghcr.io/windoze95/saltybytes-dashboard:latest</Repository>
   <Registry>https://ghcr.io</Registry>
   <Network>br0</Network>
   <MyIP/>
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
-  <Support>https://github.com/saltybytes/saltybytes-dashboard/issues</Support>
-  <Project>https://github.com/saltybytes/saltybytes-dashboard</Project>
+  <Support>https://github.com/windoze95/saltybytes-dashboard/issues</Support>
+  <Project>https://github.com/windoze95/saltybytes-dashboard</Project>
   <Overview>
     SaltyBytes operational dashboard. Connects read-only to the production PostgreSQL database and surfaces metrics, cost tracking, and data health checks across AI providers, caching layers, recipe pipelines, and user subscriptions.
   </Overview>
   <Category>Tools: Productivity:</Category>
   <WebUI>http://[IP]:[PORT:80]/</WebUI>
-  <TemplateURL>https://raw.githubusercontent.com/saltybytes/saltybytes-dashboard/main/unraid/saltybytes-dashboard.xml</TemplateURL>
-  <Icon>https://raw.githubusercontent.com/saltybytes/saltybytes-dashboard/main/logo/icon.png</Icon>
+  <TemplateURL>https://raw.githubusercontent.com/windoze95/saltybytes-dashboard/main/unraid/saltybytes-dashboard.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/windoze95/saltybytes-dashboard/main/logo/icon.png</Icon>
   <ExtraParams/>
   <PostArgs/>
   <CPUset/>

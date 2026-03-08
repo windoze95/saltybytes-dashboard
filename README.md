@@ -72,12 +72,12 @@ To install manually:
 1. In the Unraid web UI, go to **Docker > Add Container > Template Repositories**.
 2. Add the template URL:
    ```
-   https://raw.githubusercontent.com/saltybytes/saltybytes-dashboard/main/unraid/saltybytes-dashboard.xml
+   https://raw.githubusercontent.com/windoze95/saltybytes-dashboard/main/unraid/saltybytes-dashboard.xml
    ```
 3. Click **Add**, then find **saltybytes-dashboard** in the template list.
 4. Fill in the **Database URL** and **Dashboard Password** fields, then click **Apply**.
 
-The container image is pulled from `ghcr.io/saltybytes/saltybytes-dashboard:latest`. Persistent data (rate card configuration) is stored at `/mnt/user/appdata/saltybytes-dashboard` by default.
+The container image is pulled from `ghcr.io/windoze95/saltybytes-dashboard:latest`. Persistent data (rate card configuration) is stored at `/mnt/user/appdata/saltybytes-dashboard` by default.
 
 ---
 

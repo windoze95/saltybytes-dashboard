@@ -6,9 +6,10 @@
 frontend/node_modules/
 frontend/dist/
 
-# Embedded static (built from frontend)
+# Embedded static (built from frontend, except placeholder)
 internal/server/static/assets/
 internal/server/static/index.html
+!internal/server/static/placeholder.txt
 
 # Environment
 .env
