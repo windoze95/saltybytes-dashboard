@@ -22,6 +22,16 @@ func safeScan(tx *gorm.DB, dest ...interface{}) {
 	}
 }
 
+// hasColumn checks if a column exists on a table in the public schema.
+func hasColumn(db *gorm.DB, table, column string) bool {
+	var count int64
+	safeScan(db.Raw(
+		"SELECT COUNT(*) FROM information_schema.columns WHERE table_schema = 'public' AND table_name = ? AND column_name = ?",
+		table, column,
+	), &count)
+	return count > 0
+}
+
 type LabelCount struct {
 	Label string `json:"label" gorm:"column:label"`
 	Count int64  `json:"count" gorm:"column:count"`

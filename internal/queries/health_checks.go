@@ -122,15 +122,17 @@ func GetHealthChecks(db *gorm.DB) []HealthCheck {
 		Message: fmt.Sprintf("%d duplicate normalized queries", count),
 	})
 
-	// Recipes with image_prompt but no image
-	count = 0
-	safeScan(db.Raw("SELECT COUNT(*) FROM recipes WHERE image_prompt != '' AND (image_url = '' OR image_url IS NULL) AND deleted_at IS NULL"), &count)
-	checks = append(checks, HealthCheck{
-		Name:    "Recipes with prompt but no image",
-		Status:  warnStatus(count == 0),
-		Count:   count,
-		Message: fmt.Sprintf("%d recipes have image_prompt but no image_url", count),
-	})
+	// Recipes with image_prompt but no image (only if column exists)
+	if hasColumn(db, "recipes", "image_prompt") {
+		count = 0
+		safeScan(db.Raw("SELECT COUNT(*) FROM recipes WHERE image_prompt != '' AND (image_url = '' OR image_url IS NULL) AND deleted_at IS NULL"), &count)
+		checks = append(checks, HealthCheck{
+			Name:    "Recipes with prompt but no image",
+			Status:  warnStatus(count == 0),
+			Count:   count,
+			Message: fmt.Sprintf("%d recipes have image_prompt but no image_url", count),
+		})
+	}
 
 	// Orphaned canonical references
 	count = 0

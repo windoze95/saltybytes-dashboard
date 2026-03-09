@@ -64,12 +64,22 @@ func GetRecipeMetrics(db *gorm.DB) (*RecipeMetrics, error) {
 		m.UserEditedRate = float64(m.UserEditedCount) / float64(m.TotalRecipes) * 100
 	}
 
-	// These columns may not exist on every schema version — use safeScan
-	safeScan(db.Raw("SELECT COUNT(*) FROM recipes WHERE deleted_at IS NULL AND source_url IS NOT NULL AND source_url != ''"), &m.RecipesWithSourceURL)
-	safeScan(db.Raw("SELECT COUNT(*) FROM recipes WHERE deleted_at IS NULL AND original_image_url IS NOT NULL AND original_image_url != ''"), &m.ImageRegenCount)
-	safeScan(db.Raw("SELECT COALESCE(AVG(cook_time), 0) FROM recipes WHERE deleted_at IS NULL AND cook_time > 0"), &m.AvgCookTime)
-	safeScan(db.Raw("SELECT COALESCE(AVG(portions), 0) FROM recipes WHERE deleted_at IS NULL AND portions > 0"), &m.AvgPortions)
-	safeScan(db.Raw("SELECT COALESCE(AVG(jsonb_array_length(ingredients)), 0) FROM recipes WHERE deleted_at IS NULL AND ingredients IS NOT NULL AND ingredients != 'null'"), &m.AvgIngredientsPerRecipe)
+	// These RecipeDef columns may not exist if they haven't been migrated
+	if hasColumn(db, "recipes", "source_url") {
+		db.Table("recipes").Where("deleted_at IS NULL AND source_url IS NOT NULL AND source_url != ''").Count(&m.RecipesWithSourceURL)
+	}
+	if hasColumn(db, "recipes", "original_image_url") {
+		db.Table("recipes").Where("deleted_at IS NULL AND original_image_url IS NOT NULL AND original_image_url != ''").Count(&m.ImageRegenCount)
+	}
+	if hasColumn(db, "recipes", "cook_time") {
+		safeScan(db.Raw("SELECT COALESCE(AVG(cook_time), 0) FROM recipes WHERE deleted_at IS NULL AND cook_time > 0"), &m.AvgCookTime)
+	}
+	if hasColumn(db, "recipes", "portions") {
+		safeScan(db.Raw("SELECT COALESCE(AVG(portions), 0) FROM recipes WHERE deleted_at IS NULL AND portions > 0"), &m.AvgPortions)
+	}
+	if hasColumn(db, "recipes", "ingredients") {
+		safeScan(db.Raw("SELECT COALESCE(AVG(jsonb_array_length(ingredients)), 0) FROM recipes WHERE deleted_at IS NULL AND ingredients IS NOT NULL AND ingredients != 'null'"), &m.AvgIngredientsPerRecipe)
+	}
 
 	// Node type distribution
 	db.Table("recipe_nodes").
