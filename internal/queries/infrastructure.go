@@ -19,7 +19,7 @@ func GetInfrastructureMetrics(db *gorm.DB, s3CostPerGB float64) (*Infrastructure
 	m := &InfrastructureMetrics{}
 
 	// Total database size
-	db.Raw("SELECT pg_database_size(current_database())").Row().Scan(&m.DatabaseSizeBytes)
+	safeScan(db.Raw("SELECT pg_database_size(current_database())"), &m.DatabaseSizeBytes)
 	m.DatabaseSizeMB = float64(m.DatabaseSizeBytes) / (1024 * 1024)
 
 	// Table sizes
@@ -45,7 +45,7 @@ func GetInfrastructureMetrics(db *gorm.DB, s3CostPerGB float64) (*Infrastructure
 		ORDER BY size_bytes DESC`).Find(&m.IndexSizes)
 
 	// Connection count
-	db.Raw("SELECT COUNT(*) FROM pg_stat_activity WHERE datname = current_database()").Row().Scan(&m.ConnectionCount)
+	safeScan(db.Raw("SELECT COUNT(*) FROM pg_stat_activity WHERE datname = current_database()"), &m.ConnectionCount)
 
 	// S3 image estimates
 	db.Table("recipes").Where("deleted_at IS NULL AND image_url != '' AND image_url IS NOT NULL").Count(&m.S3ImageCount)

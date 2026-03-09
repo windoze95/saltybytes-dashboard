@@ -34,9 +34,7 @@ func GetAllergenMetrics(db *gorm.DB) (*AllergenMetrics, error) {
 		m.RequiresReviewRate = float64(m.RequiresReviewCount) / float64(m.TotalAnalyses) * 100
 	}
 
-	db.Table("allergen_analyses").
-		Select("COALESCE(AVG(confidence), 0)").
-		Row().Scan(&m.AvgConfidence)
+	safeScan(db.Table("allergen_analyses").Select("COALESCE(AVG(confidence), 0)"), &m.AvgConfidence)
 
 	// Allergen flags breakdown
 	db.Raw(`SELECT 'Nuts' as label, COUNT(*) as count FROM allergen_analyses WHERE contains_nuts = true

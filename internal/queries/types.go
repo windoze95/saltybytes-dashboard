@@ -1,8 +1,26 @@
 package queries
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 // Shared types used across query files.
+
+// safeScan extracts rows from a GORM query and scans into dest, gracefully
+// handling query errors (e.g. missing columns) that would otherwise cause a
+// nil-pointer panic via the standard .Row().Scan() path.
+func safeScan(tx *gorm.DB, dest ...interface{}) {
+	rows, err := tx.Rows()
+	if err != nil || rows == nil {
+		return
+	}
+	defer rows.Close()
+	if rows.Next() {
+		rows.Scan(dest...)
+	}
+}
 
 type LabelCount struct {
 	Label string `json:"label" gorm:"column:label"`

@@ -33,9 +33,7 @@ func GetCanonicalMetrics(db *gorm.DB) (*CanonicalMetrics, error) {
 	db.Table("canonical_recipes").Where("created_at >= ?", today).Count(&m.NewToday)
 	db.Table("canonical_recipes").Where("hit_count = 0").Count(&m.ZeroHitEntries)
 
-	db.Table("canonical_recipes").
-		Select("COALESCE(AVG(hit_count), 0)").
-		Row().Scan(&m.AvgHitCount)
+	safeScan(db.Table("canonical_recipes").Select("COALESCE(AVG(hit_count), 0)"), &m.AvgHitCount)
 
 	// Extraction method distribution
 	db.Table("canonical_recipes").
@@ -79,10 +77,9 @@ func GetCanonicalMetrics(db *gorm.DB) (*CanonicalMetrics, error) {
 		Count(&m.FirecrawlTotalCalls)
 
 	// AI extractions saved: sum of hit_count for haiku-extracted entries
-	db.Table("canonical_recipes").
+	safeScan(db.Table("canonical_recipes").
 		Where("extraction_method IN ('haiku','firecrawl_haiku')").
-		Select("COALESCE(SUM(hit_count), 0)").
-		Row().Scan(&m.TotalAIExtractionsSaved)
+		Select("COALESCE(SUM(hit_count), 0)"), &m.TotalAIExtractionsSaved)
 
 	// Daily new (30 days)
 	thirtyDaysAgo := today.AddDate(0, 0, -30)

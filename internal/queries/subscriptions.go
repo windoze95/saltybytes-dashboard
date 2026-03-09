@@ -37,20 +37,9 @@ func GetSubscriptionMetrics(db *gorm.DB) (*SubscriptionMetrics, error) {
 		Find(&m.TierDistribution)
 
 	// Average usage for free tier
-	db.Table("subscriptions").
-		Where("tier = 'free'").
-		Select("COALESCE(AVG(allergen_analyses_used), 0)").
-		Row().Scan(&m.AvgAllergenUsed)
-
-	db.Table("subscriptions").
-		Where("tier = 'free'").
-		Select("COALESCE(AVG(web_searches_used), 0)").
-		Row().Scan(&m.AvgSearchesUsed)
-
-	db.Table("subscriptions").
-		Where("tier = 'free'").
-		Select("COALESCE(AVG(ai_generations_used), 0)").
-		Row().Scan(&m.AvgAIGenerationsUsed)
+	safeScan(db.Table("subscriptions").Where("tier = 'free'").Select("COALESCE(AVG(allergen_analyses_used), 0)"), &m.AvgAllergenUsed)
+	safeScan(db.Table("subscriptions").Where("tier = 'free'").Select("COALESCE(AVG(web_searches_used), 0)"), &m.AvgSearchesUsed)
+	safeScan(db.Table("subscriptions").Where("tier = 'free'").Select("COALESCE(AVG(ai_generations_used), 0)"), &m.AvgAIGenerationsUsed)
 
 	// Users near limits (>= 18 out of 20)
 	db.Table("subscriptions").

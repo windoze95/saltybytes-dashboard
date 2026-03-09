@@ -55,14 +55,7 @@ func GetRecipeMetrics(db *gorm.DB) (*RecipeMetrics, error) {
 	db.Table("recipes").Where("deleted_at IS NULL AND created_at >= ?", weekAgo).Count(&m.RecipesThisWeek)
 	db.Table("recipes").Where("deleted_at IS NULL AND image_url != ''").Count(&m.RecipesWithImages)
 	db.Table("recipes").Where("deleted_at IS NULL AND embedding IS NOT NULL").Count(&m.RecipesWithEmbeddings)
-	// source_url may not exist on older schemas; check column existence first
-	var colExists int64
-	db.Raw("SELECT COUNT(*) FROM information_schema.columns WHERE table_name = 'recipes' AND column_name = 'source_url'").Row().Scan(&colExists)
-	if colExists > 0 {
-		db.Table("recipes").Where("deleted_at IS NULL AND source_url IS NOT NULL AND source_url != ''").Count(&m.RecipesWithSourceURL)
-	}
 	db.Table("recipes").Where("deleted_at IS NULL AND user_edited = true").Count(&m.UserEditedCount)
-	db.Table("recipes").Where("deleted_at IS NULL AND original_image_url != '' AND original_image_url IS NOT NULL").Count(&m.ImageRegenCount)
 	db.Table("recipes").Where("deleted_at IS NOT NULL AND deleted_at >= ?", today).Count(&m.DeletedToday)
 
 	if m.TotalRecipes > 0 {
@@ -71,20 +64,12 @@ func GetRecipeMetrics(db *gorm.DB) (*RecipeMetrics, error) {
 		m.UserEditedRate = float64(m.UserEditedCount) / float64(m.TotalRecipes) * 100
 	}
 
-	// Avg stats
-	db.Table("recipes").
-		Where("deleted_at IS NULL AND cook_time > 0").
-		Select("AVG(cook_time)").
-		Row().Scan(&m.AvgCookTime)
-
-	db.Table("recipes").
-		Where("deleted_at IS NULL AND portions > 0").
-		Select("AVG(portions)").
-		Row().Scan(&m.AvgPortions)
-
-	// Avg ingredients (JSONB array length)
-	db.Raw("SELECT COALESCE(AVG(jsonb_array_length(ingredients)), 0) FROM recipes WHERE deleted_at IS NULL AND ingredients IS NOT NULL AND ingredients != 'null'").
-		Row().Scan(&m.AvgIngredientsPerRecipe)
+	// These columns may not exist on every schema version — use safeScan
+	safeScan(db.Raw("SELECT COUNT(*) FROM recipes WHERE deleted_at IS NULL AND source_url IS NOT NULL AND source_url != ''"), &m.RecipesWithSourceURL)
+	safeScan(db.Raw("SELECT COUNT(*) FROM recipes WHERE deleted_at IS NULL AND original_image_url IS NOT NULL AND original_image_url != ''"), &m.ImageRegenCount)
+	safeScan(db.Raw("SELECT COALESCE(AVG(cook_time), 0) FROM recipes WHERE deleted_at IS NULL AND cook_time > 0"), &m.AvgCookTime)
+	safeScan(db.Raw("SELECT COALESCE(AVG(portions), 0) FROM recipes WHERE deleted_at IS NULL AND portions > 0"), &m.AvgPortions)
+	safeScan(db.Raw("SELECT COALESCE(AVG(jsonb_array_length(ingredients)), 0) FROM recipes WHERE deleted_at IS NULL AND ingredients IS NOT NULL AND ingredients != 'null'"), &m.AvgIngredientsPerRecipe)
 
 	// Node type distribution
 	db.Table("recipe_nodes").
@@ -144,7 +129,7 @@ func GetRecipeMetrics(db *gorm.DB) (*RecipeMetrics, error) {
 	db.Table("recipes").Where("deleted_at IS NULL AND forked_from_id IS NOT NULL").Count(&m.ForkCount)
 
 	// Fork chain depth via recursive CTE
-	db.Raw(`WITH RECURSIVE fork_chain AS (
+	safeScan(db.Raw(`WITH RECURSIVE fork_chain AS (
 		SELECT id, forked_from_id, 1 as depth FROM recipes WHERE forked_from_id IS NOT NULL AND deleted_at IS NULL
 		UNION ALL
 		SELECT r.id, r.forked_from_id, fc.depth + 1
@@ -152,8 +137,7 @@ func GetRecipeMetrics(db *gorm.DB) (*RecipeMetrics, error) {
 		JOIN fork_chain fc ON r.forked_from_id = fc.id
 		WHERE r.deleted_at IS NULL
 	)
-	SELECT COALESCE(MAX(depth), 0), COALESCE(AVG(depth), 0) FROM fork_chain`).
-		Row().Scan(&m.MaxForkDepth, &m.AvgForkDepth)
+	SELECT COALESCE(MAX(depth), 0), COALESCE(AVG(depth), 0) FROM fork_chain`), &m.MaxForkDepth, &m.AvgForkDepth)
 
 	// Trees
 	db.Table("recipe_trees").Count(&m.TotalTrees)

@@ -33,13 +33,8 @@ func GetSearchCacheMetrics(db *gorm.DB) (*SearchCacheMetrics, error) {
 		m.EmbeddingCoverage = float64(m.EntriesWithEmbeddings) / float64(m.TotalCachedQueries) * 100
 	}
 
-	db.Table("search_caches").
-		Select("COALESCE(AVG(hit_count), 0)").
-		Row().Scan(&m.AvgHitCount)
-
-	db.Table("search_caches").
-		Select("COALESCE(AVG(result_count), 0)").
-		Row().Scan(&m.AvgResultsPerQuery)
+	safeScan(db.Table("search_caches").Select("COALESCE(AVG(hit_count), 0)"), &m.AvgHitCount)
+	safeScan(db.Table("search_caches").Select("COALESCE(AVG(result_count), 0)"), &m.AvgResultsPerQuery)
 
 	// Top queries by hits
 	db.Table("search_caches").
