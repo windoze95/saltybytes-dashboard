@@ -39,13 +39,13 @@ func GetAllergenMetrics(db *gorm.DB) (*AllergenMetrics, error) {
 		Row().Scan(&m.AvgConfidence)
 
 	// Allergen flags breakdown
-	db.Raw(`SELECT 'Nuts' as label, COUNT(*) as count FROM allergen_analyses WHERE nuts = true
-		UNION ALL SELECT 'Dairy', COUNT(*) FROM allergen_analyses WHERE dairy = true
-		UNION ALL SELECT 'Gluten', COUNT(*) FROM allergen_analyses WHERE gluten = true
-		UNION ALL SELECT 'Soy', COUNT(*) FROM allergen_analyses WHERE soy = true
-		UNION ALL SELECT 'Seed Oils', COUNT(*) FROM allergen_analyses WHERE seed_oils = true
-		UNION ALL SELECT 'Shellfish', COUNT(*) FROM allergen_analyses WHERE shellfish = true
-		UNION ALL SELECT 'Eggs', COUNT(*) FROM allergen_analyses WHERE eggs = true
+	db.Raw(`SELECT 'Nuts' as label, COUNT(*) as count FROM allergen_analyses WHERE contains_nuts = true
+		UNION ALL SELECT 'Dairy', COUNT(*) FROM allergen_analyses WHERE contains_dairy = true
+		UNION ALL SELECT 'Gluten', COUNT(*) FROM allergen_analyses WHERE contains_gluten = true
+		UNION ALL SELECT 'Soy', COUNT(*) FROM allergen_analyses WHERE contains_soy = true
+		UNION ALL SELECT 'Seed Oils', COUNT(*) FROM allergen_analyses WHERE contains_seed_oils = true
+		UNION ALL SELECT 'Shellfish', COUNT(*) FROM allergen_analyses WHERE contains_shellfish = true
+		UNION ALL SELECT 'Eggs', COUNT(*) FROM allergen_analyses WHERE contains_eggs = true
 		ORDER BY count DESC`).Find(&m.AllergenFlags)
 
 	// Daily volume (30 days)

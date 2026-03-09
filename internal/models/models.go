@@ -182,18 +182,18 @@ func (SearchCache) TableName() string { return "search_caches" }
 
 type AllergenAnalysis struct {
 	gorm.Model
-	RecipeID       uint    `gorm:"index" json:"recipe_id"`
-	UserID         uint    `gorm:"index" json:"user_id"`
-	Nuts           bool    `json:"nuts"`
-	Dairy          bool    `json:"dairy"`
-	Gluten         bool    `json:"gluten"`
-	Soy            bool    `json:"soy"`
-	SeedOils       bool    `json:"seed_oils"`
-	Shellfish      bool    `json:"shellfish"`
-	Eggs           bool    `json:"eggs"`
-	Confidence     float64 `json:"confidence"`
-	RequiresReview bool    `json:"requires_review"`
-	IsPremium      bool    `json:"is_premium"`
+	RecipeID         uint    `gorm:"index" json:"recipe_id"`
+	NodeID           *uint   `gorm:"index" json:"node_id"`
+	ContainsNuts     bool    `json:"contains_nuts"`
+	ContainsDairy    bool    `json:"contains_dairy"`
+	ContainsGluten   bool    `json:"contains_gluten"`
+	ContainsSoy      bool    `json:"contains_soy"`
+	ContainsSeedOils bool    `json:"contains_seed_oils"`
+	ContainsShellfish bool   `json:"contains_shellfish"`
+	ContainsEggs     bool    `json:"contains_eggs"`
+	Confidence       float64 `json:"confidence"`
+	RequiresReview   bool    `json:"requires_review"`
+	IsPremium        bool    `json:"is_premium"`
 }
 
 func (AllergenAnalysis) TableName() string { return "allergen_analyses" }

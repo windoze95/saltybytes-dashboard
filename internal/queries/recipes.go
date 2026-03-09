@@ -55,7 +55,11 @@ func GetRecipeMetrics(db *gorm.DB) (*RecipeMetrics, error) {
 	db.Table("recipes").Where("deleted_at IS NULL AND created_at >= ?", weekAgo).Count(&m.RecipesThisWeek)
 	db.Table("recipes").Where("deleted_at IS NULL AND image_url != ''").Count(&m.RecipesWithImages)
 	db.Table("recipes").Where("deleted_at IS NULL AND embedding IS NOT NULL").Count(&m.RecipesWithEmbeddings)
-	db.Table("recipes").Where("deleted_at IS NULL AND source_url != ''").Count(&m.RecipesWithSourceURL)
+	// source_url may not exist on older schemas; silently ignore if column missing
+	row := db.Raw("SELECT COUNT(*) FROM recipes WHERE deleted_at IS NULL AND source_url IS NOT NULL AND source_url != ''").Row()
+	if row != nil {
+		row.Scan(&m.RecipesWithSourceURL)
+	}
 	db.Table("recipes").Where("deleted_at IS NULL AND user_edited = true").Count(&m.UserEditedCount)
 	db.Table("recipes").Where("deleted_at IS NULL AND original_image_url != '' AND original_image_url IS NOT NULL").Count(&m.ImageRegenCount)
 	db.Table("recipes").Where("deleted_at IS NOT NULL AND deleted_at >= ?", today).Count(&m.DeletedToday)
