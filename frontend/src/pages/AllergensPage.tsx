@@ -10,7 +10,7 @@ import {
   PieChart, Pie, Cell, Legend,
 } from 'recharts'
 
-const COLORS = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#06b6d4']
+const COLORS = ['#FF6B85', '#B4A7FF', '#5CFFD4', '#FFDAE0', '#E8DEFF', '#B2F5EA', '#06b6d4']
 
 export default function AllergensPage() {
   const { data: allergens, loading: al } = useMetrics(api.allergens)
@@ -37,11 +37,11 @@ export default function AllergensPage() {
                 { name: 'Premium', value: allergens.premium_count },
                 { name: 'Free', value: allergens.free_count },
               ]} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={70} label>
-                <Cell fill="#3b82f6" />
+                <Cell fill="#FF6B85" />
                 <Cell fill="#94a3b8" />
               </Pie>
               <Legend />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
             </PieChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -52,8 +52,8 @@ export default function AllergensPage() {
               <BarChart data={allergens.allergen_flags} layout="vertical">
                 <XAxis type="number" stroke="#94a3b8" fontSize={12} />
                 <YAxis dataKey="label" type="category" stroke="#94a3b8" fontSize={12} width={80} />
-                <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-                <Bar dataKey="count" fill="#ef4444" radius={[0, 4, 4, 0]} />
+                <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+                <Bar dataKey="count" fill="#FF6B85" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </ChartCard>
@@ -66,8 +66,8 @@ export default function AllergensPage() {
             <LineChart data={allergens.daily_volume}>
               <XAxis dataKey="date" tickFormatter={shortDate} stroke="#94a3b8" fontSize={12} />
               <YAxis stroke="#94a3b8" fontSize={12} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} labelFormatter={shortDate} />
-              <Line type="monotone" dataKey="count" stroke="#ef4444" strokeWidth={2} dot={false} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} labelFormatter={shortDate} />
+              <Line type="monotone" dataKey="count" stroke="#FF6B85" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -79,8 +79,8 @@ export default function AllergensPage() {
             <BarChart data={allergens.confidence_distribution}>
               <XAxis dataKey="label" stroke="#94a3b8" fontSize={11} />
               <YAxis stroke="#94a3b8" fontSize={12} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-              <Bar dataKey="count" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+              <Bar dataKey="count" fill="#B4A7FF" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

@@ -29,15 +29,15 @@ export default function DataQualityPage() {
           {data.map((check) => (
             <div
               key={check.name}
-              className="flex items-center justify-between py-2 border-b border-slate-700/50 last:border-0"
+              className="flex items-center justify-between py-2 border-b border-[#3A3A48]/50 last:border-0"
             >
               <div>
-                <p className="text-sm text-slate-300">{check.name}</p>
-                <p className="text-xs text-slate-500">{check.message}</p>
+                <p className="text-sm text-[#F0F0F5]/80">{check.name}</p>
+                <p className="text-xs text-[#F0F0F5]/50">{check.message}</p>
               </div>
               <div className="flex items-center gap-3">
                 {check.count > 0 && (
-                  <span className="text-sm text-slate-400">{check.count}</span>
+                  <span className="text-sm text-[#F0F0F5]/60">{check.count}</span>
                 )}
                 <StatusBadge status={check.status} />
               </div>

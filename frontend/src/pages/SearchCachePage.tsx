@@ -37,20 +37,20 @@ export default function SearchCachePage() {
         <ChartCard title="Cache Health">
           <div className="space-y-3">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Approaching TTL (22-24h)</span>
+              <span className="text-[#F0F0F5]/60">Approaching TTL (22-24h)</span>
               <span className="text-yellow-400">{data.entries_approaching_ttl}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Stale (past 24h)</span>
+              <span className="text-[#F0F0F5]/60">Stale (past 24h)</span>
               <span className="text-red-400">{data.stale_entries}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Hot queries (eligible refresh)</span>
-              <span className="text-blue-400">{data.hot_queries_eligible}</span>
+              <span className="text-[#F0F0F5]/60">Hot queries (eligible refresh)</span>
+              <span className="text-[#B4A7FF]">{data.hot_queries_eligible}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Stale 30d (pending cleanup)</span>
-              <span className="text-slate-500">{data.stale_entries_30d}</span>
+              <span className="text-[#F0F0F5]/60">Stale 30d (pending cleanup)</span>
+              <span className="text-[#F0F0F5]/50">{data.stale_entries_30d}</span>
             </div>
           </div>
         </ChartCard>
@@ -63,10 +63,10 @@ export default function SearchCachePage() {
               <XAxis dataKey="date" tickFormatter={shortDate} stroke="#94a3b8" fontSize={12} />
               <YAxis stroke="#94a3b8" fontSize={12} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }}
                 labelFormatter={shortDate}
               />
-              <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#FF6B85" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

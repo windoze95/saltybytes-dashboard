@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+:root {
+  --bg-base: #121218;
+  --bg-card: #1E1E28;
+  --bg-elevated: #2A2A36;
+  --text-primary: #F0F0F5;
+  --text-secondary: rgba(240, 240, 245, 0.6);
+  --text-tertiary: rgba(240, 240, 245, 0.5);
+  --border: #3A3A48;
+  --border-subtle: rgba(58, 58, 72, 0.5);
+  --accent-coral: #FF6B85;
+  --accent-purple: #B4A7FF;
+  --accent-cyan: #5CFFD4;
+  --outline: #3A3A48;
+}
+
 body {
   margin: 0;
   font-family:
@@ -7,6 +22,6 @@ body {
     Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0f172a;
-  color: #e2e8f0;
+  background-color: #121218;
+  color: #F0F0F5;
 }

@@ -20,9 +20,9 @@ export default function DataTable<T extends Record<string, unknown>>({
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-slate-700">
+          <tr className="border-b border-[#3A3A48]">
             {columns.map((col) => (
-              <th key={col.key} className="text-left py-2 px-3 text-slate-400 font-medium">
+              <th key={col.key} className="text-left py-2 px-3 text-[#F0F0F5]/60 font-medium">
                 {col.label}
               </th>
             ))}
@@ -30,9 +30,9 @@ export default function DataTable<T extends Record<string, unknown>>({
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-b border-slate-700/50 hover:bg-slate-700/30">
+            <tr key={i} className="border-b border-[#3A3A48]/50 hover:bg-[#2A2A36]/30">
               {columns.map((col) => (
-                <td key={col.key} className="py-2 px-3 text-slate-300">
+                <td key={col.key} className="py-2 px-3 text-[#F0F0F5]/80">
                   {col.render ? col.render(row) : String(row[col.key] ?? '')}
                 </td>
               ))}

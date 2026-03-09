@@ -12,7 +12,7 @@ import {
   PieChart, Pie, Cell, Legend,
 } from 'recharts'
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
+const COLORS = ['#FF6B85', '#B4A7FF', '#5CFFD4', '#FFDAE0', '#E8DEFF', '#B2F5EA']
 
 export default function UsersPage() {
   const { data: users, loading: ul } = useMetrics(api.users)
@@ -45,7 +45,7 @@ export default function UsersPage() {
             value={users.users_with_email}
             max={users.total_users}
             label={`${users.users_with_email} / ${users.total_users} users`}
-            color="bg-blue-500"
+            color="bg-[#FF6B85]"
           />
         </ChartCard>
       </div>
@@ -56,8 +56,8 @@ export default function UsersPage() {
             <LineChart data={users.daily_registrations}>
               <XAxis dataKey="date" tickFormatter={shortDate} stroke="#94a3b8" fontSize={12} />
               <YAxis stroke="#94a3b8" fontSize={12} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} labelFormatter={shortDate} />
-              <Line type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} dot={false} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} labelFormatter={shortDate} />
+              <Line type="monotone" dataKey="count" stroke="#FF6B85" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -77,7 +77,7 @@ export default function UsersPage() {
                     ))}
                   </Pie>
                   <Legend />
-                  <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -102,8 +102,8 @@ export default function UsersPage() {
                   <BarChart data={subs.allergen_distribution}>
                     <XAxis dataKey="label" stroke="#94a3b8" fontSize={10} />
                     <YAxis stroke="#94a3b8" fontSize={10} />
-                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-                    <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+                    <Bar dataKey="count" fill="#FF6B85" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -112,8 +112,8 @@ export default function UsersPage() {
                   <BarChart data={subs.search_distribution}>
                     <XAxis dataKey="label" stroke="#94a3b8" fontSize={10} />
                     <YAxis stroke="#94a3b8" fontSize={10} />
-                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-                    <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+                    <Bar dataKey="count" fill="#B4A7FF" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -122,8 +122,8 @@ export default function UsersPage() {
                   <BarChart data={subs.ai_gen_distribution}>
                     <XAxis dataKey="label" stroke="#94a3b8" fontSize={10} />
                     <YAxis stroke="#94a3b8" fontSize={10} />
-                    <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-                    <Bar dataKey="count" fill="#10b981" radius={[4, 4, 0, 0]} />
+                    <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+                    <Bar dataKey="count" fill="#5CFFD4" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartCard>
@@ -158,7 +158,7 @@ export default function UsersPage() {
                 ))}
               </Pie>
               <Legend />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
             </PieChart>
           </ResponsiveContainer>
         </ChartCard>

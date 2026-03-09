@@ -71,7 +71,7 @@ export default function OverviewPage() {
             value={data.firecrawl_credits_used}
             max={data.firecrawl_credits_used + data.firecrawl_credits_left}
             label={`${data.firecrawl_credits_left} remaining`}
-            color={data.firecrawl_credits_left < 100 ? 'bg-red-500' : 'bg-blue-500'}
+            color={data.firecrawl_credits_left < 100 ? 'bg-red-500' : 'bg-[#FF6B85]'}
           />
         </ChartCard>
       </div>
@@ -83,10 +83,10 @@ export default function OverviewPage() {
               <XAxis dataKey="date" tickFormatter={shortDate} stroke="#94a3b8" fontSize={12} />
               <YAxis stroke="#94a3b8" fontSize={12} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }}
                 labelFormatter={shortDate}
               />
-              <Bar dataKey="count" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#FF6B85" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -97,9 +97,9 @@ export default function OverviewPage() {
           <div className="space-y-2">
             {healthChecks.map((hc) => (
               <div key={hc.name} className="flex items-center justify-between text-sm">
-                <span className="text-slate-300">{hc.name}</span>
+                <span className="text-[#F0F0F5]/80">{hc.name}</span>
                 <div className="flex items-center gap-2">
-                  {hc.count > 0 && <span className="text-slate-500">{hc.count}</span>}
+                  {hc.count > 0 && <span className="text-[#F0F0F5]/50">{hc.count}</span>}
                   <StatusBadge status={hc.status} />
                 </div>
               </div>

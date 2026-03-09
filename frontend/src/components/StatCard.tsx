@@ -5,12 +5,12 @@ interface Props {
   color?: string
 }
 
-export default function StatCard({ title, value, subtitle, color = 'text-white' }: Props) {
+export default function StatCard({ title, value, subtitle, color = 'text-[#F0F0F5]' }: Props) {
   return (
-    <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
-      <p className="text-sm text-slate-400">{title}</p>
+    <div className="bg-[#1E1E28] rounded-lg p-4 border border-[#3A3A48]">
+      <p className="text-sm text-[#F0F0F5]/60">{title}</p>
       <p className={`text-2xl font-bold mt-1 ${color}`}>{value}</p>
-      {subtitle && <p className="text-xs text-slate-500 mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-xs text-[#F0F0F5]/50 mt-1">{subtitle}</p>}
     </div>
   )
 }

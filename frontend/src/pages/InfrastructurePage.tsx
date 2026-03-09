@@ -38,10 +38,10 @@ export default function InfrastructurePage() {
               <XAxis type="number" stroke="#94a3b8" fontSize={12} tickFormatter={(v) => formatBytes(v)} />
               <YAxis dataKey="name" type="category" stroke="#94a3b8" fontSize={11} width={160} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }}
                 formatter={tooltipBytes}
               />
-              <Bar dataKey="size_bytes" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="size_bytes" fill="#FF6B85" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

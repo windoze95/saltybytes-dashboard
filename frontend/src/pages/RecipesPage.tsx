@@ -11,7 +11,7 @@ import {
   PieChart, Pie, Cell, Legend,
 } from 'recharts'
 
-const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4']
+const COLORS = ['#FF6B85', '#B4A7FF', '#5CFFD4', '#FFDAE0', '#E8DEFF', '#B2F5EA', '#06b6d4']
 
 export default function RecipesPage() {
   const { data: recipes, loading: rl } = useMetrics(api.recipes)
@@ -42,7 +42,7 @@ export default function RecipesPage() {
           <ProgressBar value={recipes.embedding_coverage} max={100} label={`${recipes.recipes_with_embeddings} / ${recipes.total_recipes}`} color="bg-emerald-500" />
         </ChartCard>
         <ChartCard title="Image Coverage">
-          <ProgressBar value={recipes.image_coverage} max={100} label={`${recipes.recipes_with_images} / ${recipes.total_recipes}`} color="bg-blue-500" />
+          <ProgressBar value={recipes.image_coverage} max={100} label={`${recipes.recipes_with_images} / ${recipes.total_recipes}`} color="bg-[#FF6B85]" />
         </ChartCard>
       </div>
 
@@ -56,7 +56,7 @@ export default function RecipesPage() {
                 ))}
               </Pie>
               <Legend />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
             </PieChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -68,8 +68,8 @@ export default function RecipesPage() {
             <BarChart data={recipes.import_breakdown} layout="vertical">
               <XAxis type="number" stroke="#94a3b8" fontSize={12} />
               <YAxis dataKey="label" type="category" stroke="#94a3b8" fontSize={12} width={100} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-              <Bar dataKey="count" fill="#3b82f6" radius={[0, 4, 4, 0]} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+              <Bar dataKey="count" fill="#FF6B85" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -117,7 +117,7 @@ export default function RecipesPage() {
                     ))}
                   </Pie>
                   <Legend />
-                  <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
                 </PieChart>
               </ResponsiveContainer>
             </ChartCard>
@@ -148,7 +148,7 @@ export default function RecipesPage() {
                 <BarChart data={canonical.daily_new}>
                   <XAxis dataKey="date" tickFormatter={shortDate} stroke="#94a3b8" fontSize={12} />
                   <YAxis stroke="#94a3b8" fontSize={12} />
-                  <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} labelFormatter={shortDate} />
+                  <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} labelFormatter={shortDate} />
                   <Bar dataKey="count" fill="#10b981" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -163,8 +163,8 @@ export default function RecipesPage() {
             <BarChart data={recipes.top_hashtags.slice(0, 15)} layout="vertical">
               <XAxis type="number" stroke="#94a3b8" fontSize={12} />
               <YAxis dataKey="label" type="category" stroke="#94a3b8" fontSize={12} width={120} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-              <Bar dataKey="count" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+              <Bar dataKey="count" fill="#B4A7FF" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -176,8 +176,8 @@ export default function RecipesPage() {
             <BarChart data={recipes.recipes_per_user}>
               <XAxis dataKey="label" stroke="#94a3b8" fontSize={12} />
               <YAxis stroke="#94a3b8" fontSize={12} />
-              <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }} />
-              <Bar dataKey="count" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              <Tooltip contentStyle={{ backgroundColor: '#1E1E28', border: '1px solid #3A3A48' }} />
+              <Bar dataKey="count" fill="#5CFFD4" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>

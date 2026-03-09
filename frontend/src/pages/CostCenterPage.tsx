@@ -97,7 +97,7 @@ export default function CostCenterPage() {
             color={
               data.firecrawl_credits_used > data.firecrawl_credits_max * 0.8
                 ? 'bg-red-500'
-                : 'bg-blue-500'
+                : 'bg-[#FF6B85]'
             }
           />
         </ChartCard>
@@ -108,7 +108,7 @@ export default function CostCenterPage() {
           {!editing ? (
             <button
               onClick={handleEdit}
-              className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm"
+              className="px-3 py-1 bg-[#FF6B85] hover:bg-[#E55570] text-[#F0F0F5] rounded text-sm"
             >
               Edit
             </button>
@@ -116,14 +116,14 @@ export default function CostCenterPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setEditing(false)}
-                className="px-3 py-1 bg-slate-600 hover:bg-slate-700 text-white rounded text-sm"
+                className="px-3 py-1 bg-[#3A3A48] hover:bg-[#2A2A36] text-[#F0F0F5] rounded text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded text-sm disabled:opacity-50"
+                className="px-3 py-1 bg-green-600 hover:bg-green-700 text-[#F0F0F5] rounded text-sm disabled:opacity-50"
               >
                 {saving ? 'Saving...' : 'Save'}
               </button>
@@ -133,7 +133,7 @@ export default function CostCenterPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {rateCardFields.map(({ key, label, prefix }) => (
             <div key={key} className="flex items-center justify-between">
-              <span className="text-sm text-slate-400">{label}</span>
+              <span className="text-sm text-[#F0F0F5]/60">{label}</span>
               {editing && rateCard ? (
                 <input
                   type="number"
@@ -142,10 +142,10 @@ export default function CostCenterPage() {
                   onChange={(e) =>
                     setRateCard({ ...rateCard, [key]: parseFloat(e.target.value) || 0 })
                   }
-                  className="w-28 px-2 py-1 bg-slate-700 border border-slate-600 rounded text-white text-sm text-right"
+                  className="w-28 px-2 py-1 bg-[#2A2A36] border border-[#3A3A48] rounded text-[#F0F0F5] text-sm text-right"
                 />
               ) : (
-                <span className="text-sm text-slate-300">
+                <span className="text-sm text-[#F0F0F5]/80">
                   {prefix}
                   {data.rate_card[key]}
                 </span>
