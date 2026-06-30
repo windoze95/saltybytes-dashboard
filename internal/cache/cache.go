@@ -26,8 +26,25 @@ type MetricCache struct {
 	HealthChecks   []queries.HealthCheck
 	Overview       *OverviewMetrics
 	CostCenter     *CostCenterMetrics
+	AIModels       *AIModelMetrics
 
 	lastRefresh time.Time
+}
+
+// AIModelMetrics is the AI usage report plus counterfactual ("what model X
+// would have cost") pricing of the recorded token volume.
+type AIModelMetrics struct {
+	*queries.AIModelUsage
+	Counterfactuals []AICounterfactual `json:"counterfactuals"`
+}
+
+// AICounterfactual is what the period's recorded tokens would have cost on a
+// given model. VsActualPct is negative when the candidate is cheaper than what
+// was actually spent.
+type AICounterfactual struct {
+	Label       string  `json:"label"`
+	CostUSD     float64 `json:"cost_usd"`
+	VsActualPct float64 `json:"vs_actual_pct"`
 }
 
 type OverviewMetrics struct {
@@ -113,6 +130,37 @@ func (c *MetricCache) Refresh() {
 
 	healthChecks = queries.GetHealthChecks(c.db)
 
+	// AI model usage (last 30 days) + counterfactual pricing of the recorded
+	// token volume against each candidate model's rate.
+	aiUsage, _ := queries.GetAIModelUsage(c.db, 30)
+	aiModels := &AIModelMetrics{AIModelUsage: aiUsage}
+	if aiUsage != nil {
+		inM := float64(aiUsage.TotalInputTokens) / 1_000_000
+		outM := float64(aiUsage.TotalOutputTokens) / 1_000_000
+		candidates := []struct {
+			label   string
+			in, out float64
+		}{
+			{"Claude Haiku", rc.AnthropicHaikuInputPerMTok, rc.AnthropicHaikuOutputPerMTok},
+			{"Claude Sonnet", rc.AnthropicSonnetInputPerMTok, rc.AnthropicSonnetOutputPerMTok},
+			{"GPT-4o mini", rc.GPT4oMiniInputPerMTok, rc.GPT4oMiniOutputPerMTok},
+			{"Gemini Flash", rc.GeminiFlashInputPerMTok, rc.GeminiFlashOutputPerMTok},
+			{"DeepSeek", rc.DeepSeekInputPerMTok, rc.DeepSeekOutputPerMTok},
+		}
+		for _, cand := range candidates {
+			cost := inM*cand.in + outM*cand.out
+			pct := 0.0
+			if aiUsage.TotalCostUSD > 0 {
+				pct = (cost - aiUsage.TotalCostUSD) / aiUsage.TotalCostUSD * 100
+			}
+			aiModels.Counterfactuals = append(aiModels.Counterfactuals, AICounterfactual{
+				Label:       cand.label,
+				CostUSD:     cost,
+				VsActualPct: pct,
+			})
+		}
+	}
+
 	// Compute overview
 	overview := &OverviewMetrics{}
 	if users != nil {
@@ -175,6 +223,7 @@ func (c *MetricCache) Refresh() {
 	c.HealthChecks = healthChecks
 	c.Overview = overview
 	c.CostCenter = costCenter
+	c.AIModels = aiModels
 	c.lastRefresh = time.Now()
 	c.mu.Unlock()
 
@@ -245,6 +294,12 @@ func (c *MetricCache) GetCostCenter() *CostCenterMetrics {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.CostCenter
+}
+
+func (c *MetricCache) GetAIModels() *AIModelMetrics {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.AIModels
 }
 
 func (c *MetricCache) GetLastRefresh() time.Time {

@@ -52,6 +52,7 @@ export const api = {
   infrastructure: () => fetchJSON<InfrastructureMetrics>('/infrastructure'),
   healthChecks: () => fetchJSON<HealthCheck[]>('/health-checks'),
   costCenter: () => fetchJSON<CostCenterMetrics>('/cost-center'),
+  aiModels: () => fetchJSON<AIModelMetrics>('/ai-models'),
   rateCard: () => fetchJSON<RateCard>('/rate-card'),
   updateRateCard: (card: RateCard) => putJSON<RateCard>('/rate-card/update', card),
   refresh: () => postJSON<{ status: string }>('/refresh'),
@@ -274,4 +275,44 @@ export interface RateCard {
   aws_rds_monthly: number
   aws_ecs_monthly: number
   aws_s3_per_gb: number
+}
+
+export interface AIModelRow {
+  model: string
+  provider: string
+  calls: number
+  input_tokens: number
+  output_tokens: number
+  cost_usd: number
+  avg_latency_ms: number
+  failures: number
+}
+
+export interface AIOperationRow {
+  operation: string
+  calls: number
+  cost_usd: number
+}
+
+export interface DailyAmount {
+  date: string
+  amount: number
+}
+
+export interface AICounterfactual {
+  label: string
+  cost_usd: number
+  vs_actual_pct: number
+}
+
+export interface AIModelMetrics {
+  period_days: number
+  total_calls: number
+  total_cost_usd: number
+  total_input_tokens: number
+  total_output_tokens: number
+  by_model: AIModelRow[]
+  by_operation: AIOperationRow[]
+  daily_spend: DailyAmount[]
+  counterfactuals: AICounterfactual[]
 }

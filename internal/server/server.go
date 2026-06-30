@@ -56,6 +56,7 @@ func (s *Server) Handler() http.Handler {
 	api.HandleFunc("/api/infrastructure", s.handleInfrastructure)
 	api.HandleFunc("/api/health-checks", s.handleHealthChecks)
 	api.HandleFunc("/api/cost-center", s.handleCostCenter)
+	api.HandleFunc("/api/ai-models", s.handleAIModels)
 	api.HandleFunc("/api/rate-card", s.handleGetRateCard)
 	api.HandleFunc("/api/rate-card/update", s.handleUpdateRateCard)
 	api.HandleFunc("/api/refresh", s.handleRefresh)
