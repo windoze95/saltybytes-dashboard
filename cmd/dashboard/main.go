@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/saltybytes/saltybytes-dashboard/internal/apiclient"
 	"github.com/saltybytes/saltybytes-dashboard/internal/cache"
 	"github.com/saltybytes/saltybytes-dashboard/internal/config"
 	"github.com/saltybytes/saltybytes-dashboard/internal/db"
@@ -42,8 +43,16 @@ func main() {
 	mc := cache.New(database, rc)
 	mc.Start()
 
+	// Outbound API client for live model management (no-op unless configured).
+	apiClient := apiclient.New(cfg.APIBaseURL, cfg.APIIDHeader, cfg.AdminToken)
+	if apiClient.Enabled() {
+		log.Printf("Live AI-model management enabled (API: %s)", cfg.APIBaseURL)
+	} else {
+		log.Printf("Live AI-model management disabled (set API_BASE_URL + API_ID_HEADER + ADMIN_TOKEN to enable); registry shown read-only")
+	}
+
 	// HTTP server
-	srv := server.New(mc, rc, rateCardPath, cfg.DashboardPassword)
+	srv := server.New(mc, rc, rateCardPath, cfg.DashboardPassword, apiClient)
 	handler := srv.Handler()
 
 	log.Printf("Dashboard starting on :%s", cfg.Port)

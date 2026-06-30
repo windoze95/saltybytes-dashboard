@@ -1,10 +1,11 @@
-import { api } from '../lib/api'
+import { api, AIModelMetrics } from '../lib/api'
 import { useMetrics } from '../hooks/useMetrics'
 import { formatNumber, formatDollars, shortDate } from '../lib/format'
 import StatCard from '../components/StatCard'
 import ChartCard from '../components/ChartCard'
 import DataTable from '../components/DataTable'
 import Loading from '../components/Loading'
+import ModelRegistry from '../components/ModelRegistry'
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -23,19 +24,34 @@ function tooltipSpend(value: unknown): [string, string] {
 export default function AIModelsPage() {
   const { data, loading } = useMetrics(api.aiModels)
 
+  return (
+    <div className="space-y-6">
+      <div className="flex items-baseline justify-between">
+        <h1 className="text-2xl font-bold">AI Models</h1>
+        {data && data.total_calls > 0 && (
+          <span className="text-sm text-[#F0F0F5]/50">Last {data.period_days} days</span>
+        )}
+      </div>
+
+      {/* Live model registry + switch — always visible, independent of usage data */}
+      <ModelRegistry />
+
+      <Analytics data={data} loading={loading} />
+    </div>
+  )
+}
+
+function Analytics({ data, loading }: { data: AIModelMetrics | null; loading: boolean }) {
   if (loading && !data) return <Loading />
 
   // Endpoint returns null (or zero activity) until usage accrues.
   if (!data || data.total_calls === 0) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold">AI Models</h1>
-        <div className="bg-[#1E1E28] rounded-lg p-12 border border-[#3A3A48] text-center">
-          <p className="text-[#F0F0F5]/70">No AI usage recorded yet</p>
-          <p className="text-sm text-[#F0F0F5]/40 mt-1">
-            Model spend and counterfactuals will appear here once AI calls are logged.
-          </p>
-        </div>
+      <div className="bg-[#1E1E28] rounded-lg p-12 border border-[#3A3A48] text-center">
+        <p className="text-[#F0F0F5]/70">No AI usage recorded yet</p>
+        <p className="text-sm text-[#F0F0F5]/40 mt-1">
+          Model spend and counterfactuals will appear here once AI calls are logged.
+        </p>
       </div>
     )
   }
@@ -54,11 +70,6 @@ export default function AIModelsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-bold">AI Models</h1>
-        <span className="text-sm text-[#F0F0F5]/50">Last {data.period_days} days</span>
-      </div>
-
       {/* KPI cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard

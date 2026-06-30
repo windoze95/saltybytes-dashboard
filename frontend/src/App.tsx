@@ -12,12 +12,22 @@ import UsersPage from './pages/UsersPage'
 import AllergensPage from './pages/AllergensPage'
 import InfrastructurePage from './pages/InfrastructurePage'
 import DataQualityPage from './pages/DataQualityPage'
+import AIOpsPage from './pages/AIOpsPage'
+import CacheEconPage from './pages/CacheEconPage'
+import VideoEconPage from './pages/VideoEconPage'
+import GrowthPage from './pages/GrowthPage'
+import RecipeQualityPage from './pages/RecipeQualityPage'
 
 const NAV_ITEMS = [
   { path: '/', label: 'Overview' },
   { path: '/cost', label: 'Cost Center' },
   { path: '/ai-models', label: 'AI Models' },
+  { path: '/ai-ops', label: 'AI Ops' },
+  { path: '/cache-economics', label: 'Cache $' },
+  { path: '/video-economics', label: 'Video $' },
+  { path: '/growth', label: 'Growth' },
   { path: '/recipes', label: 'Recipes' },
+  { path: '/recipe-quality', label: 'Recipe Quality' },
   { path: '/search', label: 'Search & Cache' },
   { path: '/users', label: 'Users & Subs' },
   { path: '/allergens', label: 'Allergens' },
@@ -85,7 +95,12 @@ function Layout() {
           <Route path="/" element={<OverviewPage />} />
           <Route path="/cost" element={<CostCenterPage />} />
           <Route path="/ai-models" element={<AIModelsPage />} />
+          <Route path="/ai-ops" element={<AIOpsPage />} />
+          <Route path="/cache-economics" element={<CacheEconPage />} />
+          <Route path="/video-economics" element={<VideoEconPage />} />
+          <Route path="/growth" element={<GrowthPage />} />
           <Route path="/recipes" element={<RecipesPage />} />
+          <Route path="/recipe-quality" element={<RecipeQualityPage />} />
           <Route path="/search" element={<SearchCachePage />} />
           <Route path="/users" element={<UsersPage />} />
           <Route path="/allergens" element={<AllergensPage />} />

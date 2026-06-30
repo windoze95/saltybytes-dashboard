@@ -135,4 +135,37 @@
     Required="false"
     Mask="true"
   />
+  <Config
+    Name="Model Switch: API Base URL"
+    Target="API_BASE_URL"
+    Default="https://api.saltybytes.ai"
+    Mode=""
+    Description="Optional. Enables live AI-model switching from the dashboard. The SaltyBytes API base URL. Set this together with the ID header + admin token below; leave blank to show the model registry read-only."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false"
+  >https://api.saltybytes.ai</Config>
+  <Config
+    Name="Model Switch: API ID Header"
+    Target="API_ID_HEADER"
+    Default=""
+    Mode=""
+    Description="Optional. The API's ID_HEADER value (sent as X-SaltyBytes-Identifier). Required for live model switching."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="true"
+  />
+  <Config
+    Name="Model Switch: Admin Token"
+    Target="ADMIN_TOKEN"
+    Default=""
+    Mode=""
+    Description="Optional. The API's ADMIN_TOKEN value (sent as X-Admin-Token). Required for live model switching. Never exposed to the browser."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="true"
+  />
 </Container>
