@@ -8,6 +8,17 @@ services:
       - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
       - PORT=80
       - DATA_DIR=/data
+      # --- Optional: auto-whitelist this host's dynamic IP on the RDS security
+      # group (so a changing ISP IP never blocks the DB again). Set the SG id +
+      # your DDNS hostname to enable; needs AWS creds with
+      # ec2:Describe/Authorize/RevokeSecurityGroupIngress on that SG.
+      - SGSYNC_SECURITY_GROUP_ID=${SGSYNC_SECURITY_GROUP_ID:-}
+      - SGSYNC_DDNS_HOSTNAME=${SGSYNC_DDNS_HOSTNAME:-}
+      - SGSYNC_PORT=${SGSYNC_PORT:-5432}
+      - SGSYNC_INTERVAL=${SGSYNC_INTERVAL:-5m}
+      - AWS_REGION=${AWS_REGION:-us-east-2}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
     volumes:
       - dashboard-data:/data
     restart: unless-stopped

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"github.com/saltybytes/saltybytes-dashboard/internal/db"
 	"github.com/saltybytes/saltybytes-dashboard/internal/ratecard"
 	"github.com/saltybytes/saltybytes-dashboard/internal/server"
+	"github.com/saltybytes/saltybytes-dashboard/internal/sgsync"
 )
 
 func main() {
@@ -18,6 +20,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
+
+	// Keep this host's (dynamic) IP whitelisted on the RDS security group BEFORE
+	// connecting — a changed ISP IP would otherwise crash startup before the app
+	// could heal itself. No-op unless SGSYNC_* env vars are set.
+	sgsync.Run(context.Background(), sgsync.FromEnv())
 
 	database, err := db.Connect(cfg.DatabaseURL)
 	if err != nil {
