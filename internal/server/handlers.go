@@ -53,6 +53,10 @@ func (s *Server) handleCostCenter(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, s.cache.GetCostCenter())
 }
 
+func (s *Server) handleAIModels(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, s.cache.GetAIModels())
+}
+
 func (s *Server) handleGetRateCard(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, s.rateCard.Get())
 }

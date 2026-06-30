@@ -5,6 +5,7 @@ import AnimatedLogo from './components/AnimatedLogo'
 import LoginPage from './pages/LoginPage'
 import OverviewPage from './pages/OverviewPage'
 import CostCenterPage from './pages/CostCenterPage'
+import AIModelsPage from './pages/AIModelsPage'
 import RecipesPage from './pages/RecipesPage'
 import SearchCachePage from './pages/SearchCachePage'
 import UsersPage from './pages/UsersPage'
@@ -15,6 +16,7 @@ import DataQualityPage from './pages/DataQualityPage'
 const NAV_ITEMS = [
   { path: '/', label: 'Overview' },
   { path: '/cost', label: 'Cost Center' },
+  { path: '/ai-models', label: 'AI Models' },
   { path: '/recipes', label: 'Recipes' },
   { path: '/search', label: 'Search & Cache' },
   { path: '/users', label: 'Users & Subs' },
@@ -82,6 +84,7 @@ function Layout() {
         <Routes>
           <Route path="/" element={<OverviewPage />} />
           <Route path="/cost" element={<CostCenterPage />} />
+          <Route path="/ai-models" element={<AIModelsPage />} />
           <Route path="/recipes" element={<RecipesPage />} />
           <Route path="/search" element={<SearchCachePage />} />
           <Route path="/users" element={<UsersPage />} />

@@ -14,6 +14,15 @@ type Rates struct {
 	AnthropicHaikuInputPerMTok   float64 `json:"anthropic_haiku_input_per_mtok"`
 	AnthropicHaikuOutputPerMTok  float64 `json:"anthropic_haiku_output_per_mtok"`
 
+	// Cheap-tier candidates — used for counterfactual ("what X would have cost")
+	// pricing of the recorded token volume.
+	GPT4oMiniInputPerMTok    float64 `json:"gpt4o_mini_input_per_mtok"`
+	GPT4oMiniOutputPerMTok   float64 `json:"gpt4o_mini_output_per_mtok"`
+	GeminiFlashInputPerMTok  float64 `json:"gemini_flash_input_per_mtok"`
+	GeminiFlashOutputPerMTok float64 `json:"gemini_flash_output_per_mtok"`
+	DeepSeekInputPerMTok     float64 `json:"deepseek_input_per_mtok"`
+	DeepSeekOutputPerMTok    float64 `json:"deepseek_output_per_mtok"`
+
 	// OpenAI
 	OpenAIDallePerImage    float64 `json:"openai_dalle_per_image"`
 	OpenAIWhisperPerMinute float64 `json:"openai_whisper_per_minute"`
@@ -43,6 +52,12 @@ func Default() *RateCard {
 			AnthropicSonnetOutputPerMTok: 15.00,
 			AnthropicHaikuInputPerMTok:   0.80,
 			AnthropicHaikuOutputPerMTok:  4.00,
+			GPT4oMiniInputPerMTok:        0.15,
+			GPT4oMiniOutputPerMTok:       0.60,
+			GeminiFlashInputPerMTok:      0.10,
+			GeminiFlashOutputPerMTok:     0.40,
+			DeepSeekInputPerMTok:         0.27,
+			DeepSeekOutputPerMTok:        1.10,
 			OpenAIDallePerImage:          0.04,
 			OpenAIWhisperPerMinute:       0.006,
 			OpenAIEmbeddingPerMTok:       0.02,
