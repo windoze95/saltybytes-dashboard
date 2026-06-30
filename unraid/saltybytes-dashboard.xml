@@ -80,4 +80,59 @@
     Required="true"
     Mask="false"
   >/mnt/user/appdata/saltybytes-dashboard</Config>
+  <Config
+    Name="Auto-whitelist: Security Group ID"
+    Target="SGSYNC_SECURITY_GROUP_ID"
+    Default="sg-09cac9eaa6170d368"
+    Mode=""
+    Description="Optional. RDS security group to keep this server's public IP whitelisted on. Set with the DDNS hostname + AWS keys to enable; leave blank to disable. Fixes 'connection timed out to RDS' when your ISP IP changes."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false"
+  >sg-09cac9eaa6170d368</Config>
+  <Config
+    Name="Auto-whitelist: DDNS Hostname"
+    Target="SGSYNC_DDNS_HOSTNAME"
+    Default="longagoin.thegalaxyfarfaraway.com"
+    Mode=""
+    Description="Optional. Dynamic-DNS hostname that tracks this server's public IP. The dashboard resolves it and keeps the security-group rule in sync at startup and every 5 minutes."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false"
+  >longagoin.thegalaxyfarfaraway.com</Config>
+  <Config
+    Name="AWS Region"
+    Target="AWS_REGION"
+    Default="us-east-2"
+    Mode=""
+    Description="AWS region of the RDS security group (for auto-whitelist)."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="false"
+  >us-east-2</Config>
+  <Config
+    Name="AWS Access Key ID"
+    Target="AWS_ACCESS_KEY_ID"
+    Default=""
+    Mode=""
+    Description="Optional. AWS access key for auto-whitelist. The IAM user needs ec2:DescribeSecurityGroups + ec2:AuthorizeSecurityGroupIngress + ec2:RevokeSecurityGroupIngress."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="true"
+  />
+  <Config
+    Name="AWS Secret Access Key"
+    Target="AWS_SECRET_ACCESS_KEY"
+    Default=""
+    Mode=""
+    Description="Optional. AWS secret key paired with the access key above."
+    Type="Variable"
+    Display="advanced"
+    Required="false"
+    Mask="true"
+  />
 </Container>
