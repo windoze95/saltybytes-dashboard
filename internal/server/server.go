@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/saltybytes/saltybytes-dashboard/internal/apiclient"
 	"github.com/saltybytes/saltybytes-dashboard/internal/cache"
 	"github.com/saltybytes/saltybytes-dashboard/internal/ratecard"
 )
@@ -20,16 +21,18 @@ type Server struct {
 	rateCard     *ratecard.RateCard
 	rateCardPath string
 	password     string
+	api          *apiclient.Client // nil-safe; live model switching when Enabled()
 	sessions     map[string]time.Time
 	sessionMu    sync.RWMutex
 }
 
-func New(mc *cache.MetricCache, rc *ratecard.RateCard, rateCardPath, password string) *Server {
+func New(mc *cache.MetricCache, rc *ratecard.RateCard, rateCardPath, password string, api *apiclient.Client) *Server {
 	return &Server{
 		cache:        mc,
 		rateCard:     rc,
 		rateCardPath: rateCardPath,
 		password:     password,
+		api:          api,
 		sessions:     make(map[string]time.Time),
 	}
 }
@@ -57,6 +60,18 @@ func (s *Server) Handler() http.Handler {
 	api.HandleFunc("/api/health-checks", s.handleHealthChecks)
 	api.HandleFunc("/api/cost-center", s.handleCostCenter)
 	api.HandleFunc("/api/ai-models", s.handleAIModels)
+	api.HandleFunc("/api/ai-ops", s.handleAIOps)
+	api.HandleFunc("/api/cache-economics", s.handleCacheEconomics)
+	api.HandleFunc("/api/video-economics", s.handleVideoEconomics)
+	api.HandleFunc("/api/growth", s.handleGrowth)
+	api.HandleFunc("/api/recipe-quality", s.handleRecipeQuality)
+	// Light-tier model registry + live switch (registry read from DB; mutations
+	// proxied to the API admin endpoints).
+	api.HandleFunc("/api/ai-registry", s.handleAIRegistry)
+	api.HandleFunc("/api/ai-models/add", s.handleAIModelAdd)
+	api.HandleFunc("/api/ai-models/update", s.handleAIModelUpdate)
+	api.HandleFunc("/api/ai-models/delete", s.handleAIModelDelete)
+	api.HandleFunc("/api/ai-models/activate", s.handleAIModelActivate)
 	api.HandleFunc("/api/rate-card", s.handleGetRateCard)
 	api.HandleFunc("/api/rate-card/update", s.handleUpdateRateCard)
 	api.HandleFunc("/api/refresh", s.handleRefresh)

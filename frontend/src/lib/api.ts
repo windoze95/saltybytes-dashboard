@@ -36,6 +36,34 @@ async function putJSON<T>(path: string, body: unknown): Promise<T> {
   return res.json()
 }
 
+// postAction POSTs and surfaces the server's JSON {"error": ...} message on
+// failure — used for model-management actions where the validation-probe error
+// must reach the operator (e.g. "validation failed: model_not_found").
+async function postAction<T>(path: string, body?: unknown): Promise<T> {
+  const res = await fetch(`${BASE}${path}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  if (res.status === 401) {
+    window.location.href = '/login'
+    throw new Error('Unauthorized')
+  }
+  const text = await res.text()
+  let json: unknown = {}
+  try {
+    json = text ? JSON.parse(text) : {}
+  } catch {
+    /* non-JSON body */
+  }
+  if (!res.ok) {
+    const msg = (json as { error?: string })?.error
+    throw new Error(msg || `Request failed: ${res.status}`)
+  }
+  return json as T
+}
+
 export const api = {
   login: (password: string) => postJSON<{ status: string }>('/auth/login', { password }),
   logout: () => postJSON<{ status: string }>('/auth/logout'),
@@ -53,6 +81,20 @@ export const api = {
   healthChecks: () => fetchJSON<HealthCheck[]>('/health-checks'),
   costCenter: () => fetchJSON<CostCenterMetrics>('/cost-center'),
   aiModels: () => fetchJSON<AIModelMetrics>('/ai-models'),
+  aiOps: () => fetchJSON<AIOpsMetrics>('/ai-ops'),
+  cacheEconomics: () => fetchJSON<CacheEconomics>('/cache-economics'),
+  videoEconomics: () => fetchJSON<VideoEconomics>('/video-economics'),
+  growth: () => fetchJSON<GrowthMetrics>('/growth'),
+  recipeQuality: () => fetchJSON<RecipeQualityMetrics>('/recipe-quality'),
+
+  // Light-tier model registry + live switch
+  aiRegistry: () => fetchJSON<AIRegistryResponse>('/ai-registry'),
+  addAIModel: (m: AIModelInput) => postAction<AIModelOption>('/ai-models/add', m),
+  updateAIModel: (m: AIModelInput & { id: number }) => postAction<AIModelOption>('/ai-models/update', m),
+  deleteAIModel: (id: number) => postAction<{ status: string }>('/ai-models/delete', { id }),
+  activateAIModel: (id: number) =>
+    postAction<{ active: AIActiveSpec; option: AIModelOption }>('/ai-models/activate', { id }),
+
   rateCard: () => fetchJSON<RateCard>('/rate-card'),
   updateRateCard: (card: RateCard) => putJSON<RateCard>('/rate-card/update', card),
   refresh: () => postJSON<{ status: string }>('/refresh'),
@@ -315,4 +357,179 @@ export interface AIModelMetrics {
   by_operation: AIOperationRow[]
   daily_spend: DailyAmount[]
   counterfactuals: AICounterfactual[]
+}
+
+// --- Light-tier model registry + live switch ---
+
+export interface AIModelOption {
+  id: number
+  provider: string
+  model_id: string
+  label: string
+  base_url: string
+  input_price_per_mtok: number
+  output_price_per_mtok: number
+  enabled: boolean
+  validated: boolean
+  validation_error: string
+  last_validated_at: string | null
+}
+
+export interface AIModelInput {
+  provider: string
+  model_id: string
+  label: string
+  base_url: string
+  input_price_per_mtok: number
+  output_price_per_mtok: number
+  enabled: boolean
+}
+
+export interface AIActiveSpec {
+  active_provider: string
+  active_model: string
+  active_base_url: string
+}
+
+export interface AIModelRegistry {
+  options: AIModelOption[]
+  active: AIActiveSpec
+}
+
+export interface AIRegistryResponse {
+  registry: AIModelRegistry | null
+  management_enabled: boolean
+}
+
+// --- AI Operations ---
+
+export interface AILatencyRow {
+  label: string
+  calls: number
+  avg_ms: number
+  p50_ms: number
+  p95_ms: number
+  p99_ms: number
+}
+
+export interface AIReliabilityRow {
+  label: string
+  calls: number
+  successes: number
+  failures: number
+  error_rate: number
+}
+
+export interface AIOpsMetrics {
+  period_days: number
+  total_calls: number
+  success_rate: number
+  avg_latency_ms: number
+  p95_latency_ms: number
+  latency_by_model: AILatencyRow[]
+  latency_by_operation: AILatencyRow[]
+  reliability_by_operation: AIReliabilityRow[]
+  reliability_by_model: AIReliabilityRow[]
+  calls_per_day: DailyCount[]
+  slowest_operations: AILatencyRow[]
+}
+
+// --- Cache Economics ---
+
+export interface CacheEconomics {
+  total_canonical_entries: number
+  free_entries: number
+  paid_ai_entries: number
+  free_pct: number
+  paid_ai_pct: number
+  total_search_cache_entries: number
+  assumed_ai_extraction_usd: number
+  estimated_free_savings_usd: number
+  estimated_reuse_savings_usd: number
+  estimated_total_saved_usd: number
+  has_hit_count: boolean
+  ai_reuse_hits: number
+  extraction_method_mix: LabelCount[]
+  has_multi_page: boolean
+  multi_page_markers: number
+  single_recipe_entries: number
+  daily_new_canonical: DailyCount[]
+}
+
+// --- Video Economics ---
+
+export interface VideoPlatformRow {
+  platform: string
+  imports: number
+  cost_usd: number
+  cache_hits: number
+  failures: number
+}
+
+export interface VideoDailyRow {
+  date: string
+  spend: number
+  imports: number
+}
+
+export interface VideoEconomics {
+  period_days: number
+  total_imports: number
+  total_spend_usd: number
+  paid_imports: number
+  success_count: number
+  failed_count: number
+  success_rate: number
+  cache_hits: number
+  cache_hit_rate: number
+  avg_cost_per_paid_import: number
+  today_spend_usd: number
+  daily_budget_usd: number
+  by_platform: VideoPlatformRow[]
+  by_status: LabelCount[]
+  daily: VideoDailyRow[]
+}
+
+// --- Growth & Engagement ---
+
+export interface GrowthMetrics {
+  total_users: number
+  new_users_today: number
+  new_users_7d: number
+  new_users_30d: number
+  total_recipes: number
+  recipes_per_active_user: number
+  users_with_recipes: number
+  activation_rate: number
+  daily_signups: DailyCount[]
+  cumulative_users: DailyCount[]
+  daily_recipes: DailyCount[]
+  recipes_per_user: LabelCount[]
+  tier_distribution: LabelCount[]
+}
+
+// --- Recipe Quality ---
+
+export interface DailyRecipeOutcome {
+  date: string
+  succeeded: number
+  failed: number
+}
+
+export interface RecipeQualityMetrics {
+  total_recipes: number
+  failed_recipes: number
+  failure_rate: number
+  total_canonical: number
+  free_extraction_count: number
+  paid_extraction_count: number
+  free_extraction_rate: number
+  paid_extraction_rate: number
+  extraction_method_distribution: LabelCount[]
+  status_distribution: LabelCount[]
+  type_distribution: LabelCount[]
+  avg_ingredients: number
+  avg_steps: number
+  recipes_missing_ingredients: number
+  daily_outcome: DailyRecipeOutcome[]
 }

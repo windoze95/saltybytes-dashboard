@@ -27,6 +27,12 @@ type MetricCache struct {
 	Overview       *OverviewMetrics
 	CostCenter     *CostCenterMetrics
 	AIModels       *AIModelMetrics
+	AIRegistry     *queries.AIModelRegistry
+	AIOps          *queries.AIOpsMetrics
+	CacheEconomics *queries.CacheEconomics
+	VideoEconomics *queries.VideoEconomics
+	Growth         *queries.GrowthMetrics
+	RecipeQuality  *queries.RecipeQualityMetrics
 
 	lastRefresh time.Time
 }
@@ -48,33 +54,33 @@ type AICounterfactual struct {
 }
 
 type OverviewMetrics struct {
-	TotalUsers            int64   `json:"total_users"`
-	TotalRecipes          int64   `json:"total_recipes"`
-	TotalCanonicals       int64   `json:"total_canonicals"`
-	TodayEstimatedCost    float64 `json:"today_estimated_cost"`
-	MonthToDateCost       float64 `json:"month_to_date_cost"`
-	MonthProjection       float64 `json:"month_projection"`
-	SearchCacheHitRate    float64 `json:"search_cache_hit_rate"`
-	FirecrawlCreditsUsed  int64   `json:"firecrawl_credits_used"`
-	FirecrawlCreditsLeft  int     `json:"firecrawl_credits_left"`
-	HealthChecksPassing   int     `json:"health_checks_passing"`
-	HealthChecksTotal     int     `json:"health_checks_total"`
-	RecipesCreatedWeek    []queries.DailyCount `json:"recipes_created_week"`
+	TotalUsers           int64                `json:"total_users"`
+	TotalRecipes         int64                `json:"total_recipes"`
+	TotalCanonicals      int64                `json:"total_canonicals"`
+	TodayEstimatedCost   float64              `json:"today_estimated_cost"`
+	MonthToDateCost      float64              `json:"month_to_date_cost"`
+	MonthProjection      float64              `json:"month_projection"`
+	SearchCacheHitRate   float64              `json:"search_cache_hit_rate"`
+	FirecrawlCreditsUsed int64                `json:"firecrawl_credits_used"`
+	FirecrawlCreditsLeft int                  `json:"firecrawl_credits_left"`
+	HealthChecksPassing  int                  `json:"health_checks_passing"`
+	HealthChecksTotal    int                  `json:"health_checks_total"`
+	RecipesCreatedWeek   []queries.DailyCount `json:"recipes_created_week"`
 }
 
 type CostCenterMetrics struct {
-	DailyCostByProvider  []queries.DailyLabelCount `json:"daily_cost_by_provider"`
-	CostByFeature        []queries.LabelCount      `json:"cost_by_feature"`
-	CostPerUser          float64                   `json:"cost_per_user"`
-	CostPerRecipe        float64                   `json:"cost_per_recipe"`
-	SearchCacheSavings   float64                   `json:"search_cache_savings"`
-	CanonicalCacheSavings float64                  `json:"canonical_cache_savings"`
-	AllergenCacheSavings float64                   `json:"allergen_cache_savings"`
-	TotalSavings         float64                   `json:"total_savings"`
-	FirecrawlCreditsUsed int64                     `json:"firecrawl_credits_used"`
-	FirecrawlCreditsMax  int                       `json:"firecrawl_credits_max"`
-	MonthlyFixedCosts    float64                   `json:"monthly_fixed_costs"`
-	RateCard             ratecard.Rates            `json:"rate_card"`
+	DailyCostByProvider   []queries.DailyLabelCount `json:"daily_cost_by_provider"`
+	CostByFeature         []queries.LabelCount      `json:"cost_by_feature"`
+	CostPerUser           float64                   `json:"cost_per_user"`
+	CostPerRecipe         float64                   `json:"cost_per_recipe"`
+	SearchCacheSavings    float64                   `json:"search_cache_savings"`
+	CanonicalCacheSavings float64                   `json:"canonical_cache_savings"`
+	AllergenCacheSavings  float64                   `json:"allergen_cache_savings"`
+	TotalSavings          float64                   `json:"total_savings"`
+	FirecrawlCreditsUsed  int64                     `json:"firecrawl_credits_used"`
+	FirecrawlCreditsMax   int                       `json:"firecrawl_credits_max"`
+	MonthlyFixedCosts     float64                   `json:"monthly_fixed_costs"`
+	RateCard              ratecard.Rates            `json:"rate_card"`
 }
 
 func New(db *gorm.DB, rc *ratecard.RateCard) *MetricCache {
@@ -108,11 +114,16 @@ func (c *MetricCache) Refresh() {
 		families       *queries.FamilyMetrics
 		infrastructure *queries.InfrastructureMetrics
 		healthChecks   []queries.HealthCheck
+		aiOps          *queries.AIOpsMetrics
+		cacheEcon      *queries.CacheEconomics
+		videoEcon      *queries.VideoEconomics
+		growth         *queries.GrowthMetrics
+		recipeQuality  *queries.RecipeQualityMetrics
 	)
 
 	rc := c.rc.Get()
 
-	wg.Add(8)
+	wg.Add(13)
 
 	go func() { defer wg.Done(); users, _ = queries.GetUserMetrics(c.db) }()
 	go func() { defer wg.Done(); recipes, _ = queries.GetRecipeMetrics(c.db) }()
@@ -125,10 +136,19 @@ func (c *MetricCache) Refresh() {
 		defer wg.Done()
 		infrastructure, _ = queries.GetInfrastructureMetrics(c.db, rc.AWSS3PerGB)
 	}()
+	go func() { defer wg.Done(); aiOps, _ = queries.GetAIOps(c.db, 30) }()
+	go func() { defer wg.Done(); cacheEcon, _ = queries.GetCacheEconomics(c.db) }()
+	go func() { defer wg.Done(); videoEcon, _ = queries.GetVideoEconomics(c.db, 30) }()
+	go func() { defer wg.Done(); growth, _ = queries.GetGrowthMetrics(c.db) }()
+	go func() { defer wg.Done(); recipeQuality, _ = queries.GetRecipeQuality(c.db) }()
 
 	wg.Wait()
 
 	healthChecks = queries.GetHealthChecks(c.db)
+
+	// Light-tier model registry + active selection (read-only mirror of the
+	// API's ai_model_options / ai_config). Tiny tables — read every refresh.
+	aiRegistry, _ := queries.GetAIModelRegistry(c.db)
 
 	// AI model usage (last 30 days) + counterfactual pricing of the recorded
 	// token volume against each candidate model's rate.
@@ -188,7 +208,7 @@ func (c *MetricCache) Refresh() {
 
 	// Compute cost center
 	costCenter := &CostCenterMetrics{
-		RateCard:         rc,
+		RateCard:            rc,
 		FirecrawlCreditsMax: rc.FirecrawlMonthlyCredits,
 	}
 	if canonical != nil {
@@ -224,6 +244,12 @@ func (c *MetricCache) Refresh() {
 	c.Overview = overview
 	c.CostCenter = costCenter
 	c.AIModels = aiModels
+	c.AIRegistry = aiRegistry
+	c.AIOps = aiOps
+	c.CacheEconomics = cacheEcon
+	c.VideoEconomics = videoEcon
+	c.Growth = growth
+	c.RecipeQuality = recipeQuality
 	c.lastRefresh = time.Now()
 	c.mu.Unlock()
 
@@ -300,6 +326,42 @@ func (c *MetricCache) GetAIModels() *AIModelMetrics {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	return c.AIModels
+}
+
+func (c *MetricCache) GetAIRegistry() *queries.AIModelRegistry {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.AIRegistry
+}
+
+func (c *MetricCache) GetAIOps() *queries.AIOpsMetrics {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.AIOps
+}
+
+func (c *MetricCache) GetCacheEconomics() *queries.CacheEconomics {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.CacheEconomics
+}
+
+func (c *MetricCache) GetVideoEconomics() *queries.VideoEconomics {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.VideoEconomics
+}
+
+func (c *MetricCache) GetGrowth() *queries.GrowthMetrics {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.Growth
+}
+
+func (c *MetricCache) GetRecipeQuality() *queries.RecipeQualityMetrics {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.RecipeQuality
 }
 
 func (c *MetricCache) GetLastRefresh() time.Time {

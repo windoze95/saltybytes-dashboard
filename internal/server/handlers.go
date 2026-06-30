@@ -57,6 +57,26 @@ func (s *Server) handleAIModels(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, s.cache.GetAIModels())
 }
 
+func (s *Server) handleAIOps(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, s.cache.GetAIOps())
+}
+
+func (s *Server) handleCacheEconomics(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, s.cache.GetCacheEconomics())
+}
+
+func (s *Server) handleVideoEconomics(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, s.cache.GetVideoEconomics())
+}
+
+func (s *Server) handleGrowth(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, s.cache.GetGrowth())
+}
+
+func (s *Server) handleRecipeQuality(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, s.cache.GetRecipeQuality())
+}
+
 func (s *Server) handleGetRateCard(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, s.rateCard.Get())
 }

@@ -8,6 +8,13 @@ services:
       - DASHBOARD_PASSWORD=${DASHBOARD_PASSWORD}
       - PORT=80
       - DATA_DIR=/data
+      # --- Optional: enable live AI-model switching from the dashboard. All
+      # three must be set, otherwise the model registry is shown read-only. The
+      # admin token + ID header never reach the browser — the backend proxies
+      # the calls to the API's /v1/admin/ai/* endpoints.
+      - API_BASE_URL=${API_BASE_URL:-}     # e.g. https://api.saltybytes.ai
+      - API_ID_HEADER=${API_ID_HEADER:-}   # the API's ID_HEADER value
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-}       # the API's ADMIN_TOKEN value
       # --- Optional: auto-whitelist this host's dynamic IP on the RDS security
       # group (so a changing ISP IP never blocks the DB again). Set the SG id +
       # your DDNS hostname to enable; needs AWS creds with
